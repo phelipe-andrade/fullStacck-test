@@ -1,0 +1,13 @@
+{
+  "env": {
+    "MYSQL_USER": "root",
+    "MYSQL_PASSWORD": "Lu@@2526",
+    "MYSQL_DATABASE": "comparar",
+    "MYSQL_HOST": "localhost",
+    "MYSQL_PORT": 3306,
+
+    "JWT_KEY": "segredo",
+
+    "URL_API": "http://localhost:3000/"
+  }
+}

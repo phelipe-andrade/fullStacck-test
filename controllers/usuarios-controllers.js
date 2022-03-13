@@ -16,8 +16,8 @@ exports.cadastrarUsuario = (req, res, next) => {
           bcrypt.hash(req.body.password, 10, (errBcrypt, hash) => {
             if (errBcrypt) return res.status(500).send({ error: errBcrypt });
             conn.query(
-              `INSERT INTO users (email, password) VALUES (?,?)`,
-              [req.body.email, hash],
+              `INSERT INTO users (type_user, email, password) VALUES (?,?,?)`,
+              [process.env.TYPE_USER, req.body.email, hash],
               (error, results) => {
                 conn.release();
                 if (error) return res.status(500).send({ error: error });

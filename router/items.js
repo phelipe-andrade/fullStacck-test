@@ -1,23 +1,31 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('../mysql');
-const jwt = require('jsonwebtoken');
 const login = require('../middleware/login');
+const time = require('../time');
+const currentTime = time();
 
 router.get('/', login, (req, res, next) => {
   mysql.getConnection((error, conn) => {
     if (error) {
       return res.status(500).send({ error: error });
     }
-    conn.query(
-      'SELECT * FROM items WHERE id_user=?;',
-      [req.user.id_user],
-      (error, result, fields) => {
-        if (error) {
-          return res.status(500).send({ error: error });
-        }
-
-        const response = {
+    const query =
+      req.user.type_user === process.env.TYPE_ADM
+        ? `SELECT users.email, 
+                  items.descripition,
+                  items.deadline  
+             FROM items  
+       INNER JOIN user  
+               ON items.id_user = users.id_user;`
+        : 'SELECT * FROM items WHERE id_user=?;';
+    conn.query(query, [req.user.id_user], (error, result, fields) => {
+      if (error) {
+        return res.status(500).send({ error: error });
+      }
+      let response;
+      if (req.user.type_user === process.env.TYPE_ADM) {
+        response = {
           quantidade: result.length,
           produtos: result.map((prod) => {
             return {
@@ -27,10 +35,21 @@ router.get('/', login, (req, res, next) => {
             };
           }),
         };
+      } else {
+        response = {
+          quantidade: result.length,
+          produtos: result.map((prod) => {
+            return {
+              description: prod.description,
+              deadline: prod.deadline,
+              finish: prod.finish,
+            };
+          }),
+        };
+      }
 
-        return res.status(200).send(response);
-      },
-    );
+      return res.status(200).send(response);
+    });
   });
 });
 
@@ -45,8 +64,8 @@ router.post('/items', login, (req, res, next) => {
       [
         req.user.id_user,
         req.body.description,
-        req.body.date_insert,
-        req.body.time_insert,
+        currentTime.date,
+        currentTime.time,
         req.body.deadline,
       ],
       (error, result, field) => {
@@ -74,10 +93,34 @@ router.patch('/:id_item', login, (req, res, next) => {
       [
         req.body.description,
         req.body.deadline,
-        req.body.date_edit,
-        req.body.time_edit,
+        currentTime.date,
+        currentTime.time,
         req.params.id_item,
       ],
+      (error, result, field) => {
+        conn.release();
+
+        if (error) {
+          return res.status(500).send({ error: error });
+        }
+        const response = { mensagem: 'Produto atualizado com sucesso' };
+        res.status(202).send(response);
+      },
+    );
+  });
+});
+
+//FINALIZA UM ITEM
+router.patch('/:id_item', login, (req, res, next) => {
+  mysql.getConnection((error, conn) => {
+    if (error) {
+      return res.status(500).send({ error: error });
+    }
+    conn.query(
+      `UPDATE items
+        SET finish=?, date_finish=?, time_finish=? 
+        WHERE id_item=?`,
+      [true, currentTime.date, currentTime.time, req.params.id_item],
       (error, result, field) => {
         conn.release();
 

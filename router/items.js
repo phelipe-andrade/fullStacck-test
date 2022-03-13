@@ -37,6 +37,7 @@ router.get('/', login, (req, res, next) => {
         };
       } else {
         response = {
+          id: req.user.id_user,
           quantidade: result.length,
           produtos: result.map((prod) => {
             return {

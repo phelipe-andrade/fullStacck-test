@@ -15,9 +15,9 @@ router.get('/', login, (req, res, next) => {
         ? `SELECT users.email, 
                   items.descripition,
                   items.deadline  
-             FROM items  
-       INNER JOIN user  
-               ON items.id_user = users.id_user;`
+             FROM users  
+       INNER JOIN items  
+               ON users.id_user = items.id_user;`
         : 'SELECT * FROM items WHERE id_user=?;';
     conn.query(query, [req.user.id_user], (error, result, fields) => {
       if (error) {
@@ -32,12 +32,12 @@ router.get('/', login, (req, res, next) => {
               email: prod.email,
               description: prod.description,
               deadline: prod.deadline,
+              finish: prod.finish,
             };
           }),
         };
       } else {
         response = {
-          id: req.user.id_user,
           quantidade: result.length,
           produtos: result.map((prod) => {
             return {

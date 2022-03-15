@@ -12,7 +12,9 @@ router.get('/', login, (req, res, next) => {
     }
     console.log();
     if (req.user.type === process.env.TYPE_ADM) {
-      const query = `SELECT users.email, 
+      const query = `SELECT 
+                      items.id_item
+                      users.email, 
                       items.description,
                       items.deadline  
                       FROM users  
@@ -25,7 +27,7 @@ router.get('/', login, (req, res, next) => {
         }
         const response = {
           quantidade: result.length,
-          produtos: result.map((prod) => {
+          items: result.map((prod) => {
             return {
               email: prod.email,
               description: prod.description,
@@ -44,8 +46,9 @@ router.get('/', login, (req, res, next) => {
         }
         const response = {
           quantidade: result.length,
-          produtos: result.map((prod) => {
+          items: result.map((prod) => {
             return {
+              id: prod.id_item,
               description: prod.description,
               deadline: prod.deadline,
               finish: prod.finish,
@@ -60,7 +63,6 @@ router.get('/', login, (req, res, next) => {
 
 // INSERE UM PRODUTO
 router.post('/', login, (req, res, next) => {
-  console.log(req.user.id_user);
   mysql.getConnection((error, conn) => {
     if (error) {
       return res.status(500).send({ error: error });

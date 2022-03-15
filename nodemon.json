@@ -1,9 +1,9 @@
 {
   "env": {
-    "MYSQL_USER": "root",
-    "MYSQL_PASSWORD": "Lu@@2526",
-    "MYSQL_DATABASE": "comparar",
-    "MYSQL_HOST": "localhost",
+    "MYSQL_USER": "b9ab9a0bd14f1f",
+    "MYSQL_PASSWORD": "5e1f55a7",
+    "MYSQL_DATABASE": "heroku_ea5049ef1803df9",
+    "MYSQL_HOST": "us-cdbr-east-05.cleardb.net",
     "MYSQL_PORT": 3306,
 
     "JWT_KEY": "segredo",

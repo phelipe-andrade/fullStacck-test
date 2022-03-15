@@ -55,7 +55,8 @@ router.get('/', login, (req, res, next) => {
 });
 
 // INSERE UM PRODUTO
-router.post('/items', login, (req, res, next) => {
+router.post('/', login, (req, res, next) => {
+  console.log(req.user.id_user);
   mysql.getConnection((error, conn) => {
     if (error) {
       return res.status(500).send({ error: error });

@@ -13,7 +13,7 @@ router.get('/', login, (req, res, next) => {
     console.log();
     if (req.user.type === process.env.TYPE_ADM) {
       const query = `SELECT 
-                      items.id_item
+                      items.id_item,
                       users.email, 
                       items.description,
                       items.deadline  

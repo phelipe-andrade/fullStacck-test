@@ -53,13 +53,15 @@ exports.loginUsuario = (req, res, next) => {
         if (result) {
           const token = jwt.sign(
             {
-              id: results[0].id,
+              id: results[0].id_user,
+              type: results[0].type_user,
             },
             process.env.JWT_KEY,
             {
               expiresIn: '1h',
             },
           );
+          //console.log(results);
           return res
             .status(200)
             .send({ mensagem: 'Autenticado com sucesso!', token: token });

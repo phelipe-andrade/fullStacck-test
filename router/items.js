@@ -10,22 +10,20 @@ router.get('/', login, (req, res, next) => {
     if (error) {
       return res.status(500).send({ error: error });
     }
-    const query =
-      req.user.type_user === process.env.TYPE_ADM
-        ? `SELECT users.email, 
-                  items.descripition,
-                  items.deadline  
-             FROM users  
-       INNER JOIN items  
-               ON users.id_user = items.id_user;`
-        : 'SELECT * FROM items WHERE id_user=?;';
-    conn.query(query, [req.user.id_user], (error, result, fields) => {
-      if (error) {
-        return res.status(500).send({ error: error });
-      }
-      let response;
-      if (req.user.type_user === process.env.TYPE_ADM) {
-        response = {
+    console.log();
+    if (req.user.type === process.env.TYPE_ADM) {
+      const query = `SELECT users.email, 
+                      items.description,
+                      items.deadline  
+                      FROM users  
+                INNER JOIN items  
+                   ON users.id_user = items.id_user;`;
+
+      conn.query(query, (error, result, fields) => {
+        if (error) {
+          return res.status(500).send({ error: error });
+        }
+        const response = {
           quantidade: result.length,
           produtos: result.map((prod) => {
             return {
@@ -36,8 +34,15 @@ router.get('/', login, (req, res, next) => {
             };
           }),
         };
-      } else {
-        response = {
+        return res.status(200).send(response);
+      });
+    } else {
+      const query = 'SELECT * FROM items WHERE id_user=?;';
+      conn.query(query, [req.user.id], (error, result, fields) => {
+        if (error) {
+          return res.status(500).send({ error: error });
+        }
+        const response = {
           quantidade: result.length,
           produtos: result.map((prod) => {
             return {
@@ -47,10 +52,9 @@ router.get('/', login, (req, res, next) => {
             };
           }),
         };
-      }
-
-      return res.status(200).send(response);
-    });
+        return res.status(200).send(response);
+      });
+    }
   });
 });
 
@@ -64,7 +68,7 @@ router.post('/', login, (req, res, next) => {
     conn.query(
       'INSERT INTO items (id_user, description, date_insert, time_insert, deadline) VALUES (?,?,?,?,?);',
       [
-        req.user.id_user,
+        req.user.id,
         req.body.description,
         currentTime.date,
         currentTime.time,

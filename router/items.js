@@ -29,6 +29,7 @@ router.get('/', login, (req, res, next) => {
           quantidade: result.length,
           items: result.map((prod) => {
             return {
+              id: prod.id_item,
               email: prod.email,
               description: prod.description,
               deadline: prod.deadline,

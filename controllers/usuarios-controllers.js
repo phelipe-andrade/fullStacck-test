@@ -17,7 +17,7 @@ exports.cadastrarUsuario = (req, res, next) => {
             if (errBcrypt) return res.status(500).send({ error: errBcrypt });
             conn.query(
               `INSERT INTO users (type_user, email, password) VALUES (?,?,?)`,
-              [process.env.TYPE_USER, req.body.email, hash],
+              ['admin', req.body.email, hash],
               (error, results) => {
                 conn.release();
                 if (error) return res.status(500).send({ error: error });
